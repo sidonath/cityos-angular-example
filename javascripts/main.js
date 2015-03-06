@@ -7,7 +7,7 @@ dataVis.controller('ListController', function($scope, $websocket) {
   $scope.$watchCollection('data', function(newData) {
     if (chart) {
       // Highcharts has a nasty habit of mutating arrays given to it, so we'll give it a copy
-      newData = newData.slice();
+      newData = newData.slice(Math.max(0, newData.length - 15));
       chart.series[0].setData(newData);
     }
   });
@@ -21,7 +21,7 @@ dataVis.controller('ListController', function($scope, $websocket) {
   ws.onMessage(function(event) {
     console.log('The server told us: %o', event.data);
     var data = Number(event.data);
-    $scope.data.push(data);
+    $scope.data.push([$scope.data.length, data]);
   });
 
   ws.onError(function (event) {
