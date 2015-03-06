@@ -1,6 +1,6 @@
-window.onload = function() {
+$(function() {
   var ws = new WebSocket('ws://localhost:9090');
-  var listContainer = document.getElementById('listContainer');
+  var listContainer = $('#listContainer');
 
   ws.onopen = function (event) {
     console.log('Hurrah! Connected to the WebSocket server!');
@@ -9,9 +9,8 @@ window.onload = function() {
   ws.onmessage = function (event) {
     console.log('The server told us: %o', event.data);
 
-    var newListElement = document.createElement('li');
-    newListElement.innerHTML = event.data;
-    listContainer.appendChild(newListElement);
+    var newListElement = $('<li>', { text: event.data });
+    listContainer.append(newListElement);
   };
 
   ws.onerror = function (event) {
@@ -21,4 +20,4 @@ window.onload = function() {
   ws.onclose = function (event) {
     console.log('Server closed the connection. What to do now?');
   }
-}
+});
