@@ -1,0 +1,8 @@
+{
+  "name": "cityos-example-ws-server",
+  "description": "CityOS Hackathon Angular/Higcharts Server Example",
+  "version": "0.0.1",
+  "dependencies": {
+    "ws": "^0.7.1"
+  }
+}
