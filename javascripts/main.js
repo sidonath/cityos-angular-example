@@ -54,4 +54,9 @@ $(function() {
     },
     series: [{ data: [] }]
   });
+
+  $('#chartType').on('change', function() {
+    var type = $('#chartType').val();
+    chart.series[0].update({ type: type });
+  });
 });
