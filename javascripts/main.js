@@ -1,18 +1,8 @@
-var dataVis = angular.module('dataVis', ['ngWebSocket']);
-var chart;
+var dataVis = angular.module('dataVis', ['ngWebSocket', 'highcharts-ng']);
 
-dataVis.controller('ListController', function($scope, $websocket) {
-  $scope.data = [];
-
-  $scope.$watchCollection('data', function(newData) {
-    if (chart) {
-      // Highcharts has a nasty habit of mutating arrays given to it, so we'll give it a copy
-      newData = newData.slice(Math.max(0, newData.length - 15));
-      chart.series[0].setData(newData);
-    }
-  });
-
-  var ws = $websocket('ws://localhost:9090');
+dataVis.factory('IncomingData', function($websocket) {
+  var ws = $websocket('ws://localhost:9090'),
+      collection = [];
 
   ws.onOpen(function (event) {
     console.log('Hurrah! Connected to the WebSocket server!');
@@ -21,7 +11,7 @@ dataVis.controller('ListController', function($scope, $websocket) {
   ws.onMessage(function(event) {
     console.log('The server told us: %o', event.data);
     var data = Number(event.data);
-    $scope.data.push([$scope.data.length, data]);
+    collection.push([collection.length, data]);
   });
 
   ws.onError(function (event) {
@@ -31,13 +21,25 @@ dataVis.controller('ListController', function($scope, $websocket) {
   ws.onClose(function (event) {
     console.log('Server closed the connection. What to do now?');
   });
+
+  var object = {
+    collection: collection
+  };
+
+  return object;
 });
 
-$(function() {
-  chart = new Highcharts.Chart({
-    chart: {
-      type: 'column',
-      renderTo: 'chart'
+dataVis.controller('ListController', function($scope, IncomingData) {
+  $scope.data = IncomingData.collection;
+});
+
+dataVis.controller('ChartController', function($scope, IncomingData) {
+  $scope.chartConfig = {
+    options: {
+      chart: {
+        type: 'column',
+        renderTo: 'chart'
+      },
     },
     title: {
       text: 'Flux Capacitor Oscillations per Second'
@@ -53,10 +55,13 @@ $(function() {
       }
     },
     series: [{ data: [] }]
-  });
+  };
 
-  $('#chartType').on('change', function() {
-    var type = $('#chartType').val();
-    chart.series[0].update({ type: type });
+  $scope.data = IncomingData.collection;
+
+  $scope.$watchCollection('data', function(newData) {
+    // Highcharts has a nasty habit of mutating arrays given to it, so we'll give it a copy
+    newData = newData.slice(Math.max(0, newData.length - 15));
+    $scope.chartConfig.series[0].data = newData;
   });
 });
