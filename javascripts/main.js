@@ -1,26 +1,24 @@
-var dataVis = angular.module('dataVis', []);
+var dataVis = angular.module('dataVis', ['ngWebSocket']);
 
-dataVis.controller('ListController', function($scope) {
+dataVis.controller('ListController', function($scope, $websocket) {
   $scope.data = [];
 
-  var ws = new WebSocket('ws://localhost:9090');
+  var ws = $websocket('ws://localhost:9090');
 
-  ws.onopen = function (event) {
+  ws.onOpen(function (event) {
     console.log('Hurrah! Connected to the WebSocket server!');
-  };
+  });
 
-  ws.onmessage = function (event) {
+  ws.onMessage(function(event) {
     console.log('The server told us: %o', event.data);
-
     $scope.data.push(event.data);
-    $scope.$apply();
-  };
+  });
 
-  ws.onerror = function (event) {
+  ws.onError(function (event) {
     console.log('Ouch :(');
-  }
+  });
 
-  ws.onclose = function (event) {
+  ws.onClose(function (event) {
     console.log('Server closed the connection. What to do now?');
-  }
+  });
 });
