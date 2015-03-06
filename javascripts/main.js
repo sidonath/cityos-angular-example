@@ -1,6 +1,9 @@
-$(function() {
+var dataVis = angular.module('dataVis', []);
+
+dataVis.controller('ListController', function($scope) {
+  $scope.data = [];
+
   var ws = new WebSocket('ws://localhost:9090');
-  var listContainer = $('#listContainer');
 
   ws.onopen = function (event) {
     console.log('Hurrah! Connected to the WebSocket server!');
@@ -9,8 +12,8 @@ $(function() {
   ws.onmessage = function (event) {
     console.log('The server told us: %o', event.data);
 
-    var newListElement = $('<li>', { text: event.data });
-    listContainer.append(newListElement);
+    $scope.data.push(event.data);
+    $scope.$apply();
   };
 
   ws.onerror = function (event) {

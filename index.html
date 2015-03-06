@@ -1,15 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app='dataVis'>
 <head>
   <meta charset="UTF-8">
   <title>City OS Hackathon demo</title>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
   <script src="javascripts/main.js"></script>
 </head>
 <body>
 
 <div id="container">
-  <ol id="listContainer">
+  <ol id="listContainer" ng-controller='ListController'>
+    <li ng-repeat='value in data track by $index'>
+      {{ value }}
+    </li>
   </ol>
 </div>
 
